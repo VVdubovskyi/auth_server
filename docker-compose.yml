@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  # FastAPI сервіс
+  auth-service:
+    build: .
+    container_name: auth-service
+    ports:
+      - "8000:8000"                # FastAPI буде доступний на localhost:8000
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql+psycopg2://vbdpsu:0S879KyoqUeLmAI@db:5432/auth_server_db
+    volumes:
+      - ./app:/app                  # маппінг локальної папки для hot-reload (опціонально)
+
+  # PostgreSQL сервіс
+  db:
+    image: postgres:15
+    container_name: auth-db
+    restart: always
+    environment:
+      POSTGRES_USER: vbdpsu
+      POSTGRES_PASSWORD: 0S879KyoqUeLmAI
+
+
+      POSTGRES_DB: auth_server_db
+    ports:
+      - "5432:5432"                 # доступ до БД з локальної машини (опціонально)
+    volumes:
+      - pgdata:/var/lib/postgresql/data  # зберігання даних
+
+# Том для збереження БД
+volumes:
+  pgdata:
