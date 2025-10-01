@@ -1,13 +1,24 @@
 from fastapi import FastAPI
-import models
-import routes
+from starlette.middleware.cors import CORSMiddleware
+
+from admin import adminModels, adminRoutes
 from core import database
 
-models.Base.metadata.create_all(bind=database.engine)
+adminModels.Base.metadata.create_all(bind=database.engine)
+
+
 
 app = FastAPI(title="Auth Service")
 
-app.include_router(routes.router, prefix="/auth", tags=["auth"])
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8000", "http://localhost:5173"],  # або ["*"] для всіх
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(adminRoutes.router, prefix="/api/admin", tags=["AdminAuth"])
 
 if __name__ == "__main__":
     import uvicorn
