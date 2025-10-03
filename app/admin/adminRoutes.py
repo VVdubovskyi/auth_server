@@ -19,7 +19,7 @@ router = APIRouter()
     responses={200: {"description": "Адміністратор успішно зареєстрований"}}
 )
 def register_admin(admin: adminSchemas.UserCreate, db: Session = Depends(get_db),
-                   ):
+                   current_admin=Depends(get_current_superadmin)):
     db_admin = adminCrud.get_admin_by_username(db, admin.username)
     if db_admin:
         raise HTTPException(status_code=400, detail="Адміністратор уже існує")

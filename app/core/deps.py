@@ -59,7 +59,8 @@ def get_current_admin(db: Session = Depends(get_db), token: str = Depends(oauth2
 
 
 def get_current_superadmin(current_admin=Depends(get_current_admin)):
-    if not getattr(current_admin, "is_superadmin", False):
+    print(current_admin)
+    if not getattr(current_admin['admin'], "is_superadmin", False):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Доступ заборонено. Тільки головні адміністратори мають доступ."

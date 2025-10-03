@@ -2,11 +2,11 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from admin import adminModels, adminRoutes
+from core.database import Base, engine
 from users import userModels, userRoutes
 from core import database
+Base.metadata.create_all(bind=engine)
 
-adminModels.Base.metadata.create_all(bind=database.engine)
-userModels.Base.metadata.create_all(bind=database.engine)
 
 # Метадані для документації API
 description = """
