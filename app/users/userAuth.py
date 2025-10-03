@@ -9,10 +9,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
-
 
 def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
@@ -28,13 +26,13 @@ def create_access_token(data: dict, db: Session = None, expires_delta: timedelta
 
     # Зберігаємо токен в БД, якщо передано db session
     if db and "admin_id" in data:
-        from . import adminModels
+        from . import userModels
 
-        session = adminModels.AdminSession(
-            admin_id=data["admin_id"],
+        session = userModels.UserSession(
+            user_id=data["user_id"],
             token=token,
             expires_at=expire,
-            is_active=True
+            is_active= True
         )
         db.add(session)
         db.commit()
@@ -53,12 +51,12 @@ def decode_access_token(token: str):
 
 def verify_token_in_db(token: str, db: Session):
     """Перевіряє, чи токен активний в БД"""
-    from . import adminModels
+    from . import userModels
 
-    session = db.query(adminModels.AdminSession).filter(
-        adminModels.AdminSession.token == token,
-        adminModels.AdminSession.is_active == True,
-        adminModels.AdminSession.expires_at > datetime.utcnow()
+    session = db.query(userModels.UserSession).filter(
+        userModels.UserSession.token == token,
+        userModels.UserSession.is_active == True,
+        userModels.UserSession.expires_at > datetime.utcnow()
     ).first()
 
     return session is not None
@@ -66,10 +64,10 @@ def verify_token_in_db(token: str, db: Session):
 
 def invalidate_token(token: str, db: Session):
     """Деактивує токен в БД (logout)"""
-    from . import adminModels
+    from . import userModels
 
-    session = db.query(adminModels.AdminSession).filter(
-        adminModels.AdminSession.token == token
+    session = db.query(userModels.UserSession).filter(
+        userModels.UserSession.token == token
     ).first()
 
     if session:
